@@ -5,7 +5,6 @@ import databaseConfig from '../config/database';
 class Database {
   constructor() {
     this.init();
-    this.mongo();
   }
 
   init() {
