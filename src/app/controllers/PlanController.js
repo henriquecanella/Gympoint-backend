@@ -28,10 +28,25 @@ class PlanController {
   }
 
   async index(req, res) {
-    return res.json();
+    const plans = await Plan.findAll({
+      attributes: ['title', 'duration', 'price'],
+      order: [['duration', 'ASC']],
+    });
+
+    return res.json(plans);
   }
 
   async update(req, res) {
+    const schema = Yup.object().shape({
+      title: Yup.string(),
+      duration: Yup.number(),
+      price: Yup.number(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
+
     return res.json();
   }
 
