@@ -120,23 +120,29 @@ class EnrollmentController {
       );
     }
 
+    const initial_date = start_date || enrollment.start_date;
+
     await enrollment.update({
       price,
-      start_date,
+      start_date: initial_date,
       end_date,
       plan_id,
     });
 
     return res.json({
       price,
-      start_date,
+      start_date: initial_date,
       end_date,
       plan_id,
     });
   }
 
   async delete(req, res) {
-    return res.json();
+    const enrollment = await Enrollment.findByPk(req.params.id);
+
+    await enrollment.destroy();
+
+    return res.json({ message: `Enrollment: ${enrollment.id} deleted` });
   }
 }
 
