@@ -5,6 +5,9 @@ import Enrollment from '../models/Enrollment';
 import Plan from '../models/Plan';
 import Student from '../models/Student';
 
+import EnrollmentMail from '../jobs/EnrollmentMail';
+import Queue from '../../lib/Queue';
+
 class EnrollmentController {
   async store(req, res) {
     const schema = Yup.object().shape({
@@ -48,12 +51,18 @@ class EnrollmentController {
     const end_date = addMonths(parseISO(start_date), checkPlan.duration);
     const price = checkPlan.price * checkPlan.duration;
 
-    await Enrollment.create({
+    const enrollment = await Enrollment.create({
       price,
       start_date,
       end_date,
       student_id,
       plan_id,
+    });
+
+    await Queue.add(EnrollmentMail.key, {
+      student: studentExists,
+      plan: checkPlan,
+      enrollment,
     });
 
     return res.json({
