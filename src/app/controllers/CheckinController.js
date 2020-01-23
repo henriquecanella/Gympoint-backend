@@ -35,7 +35,12 @@ class CheckinController {
   }
 
   async index(req, res) {
-    return res.json();
+    const checkins = await Checkin.findAll({
+      where: { student_id: req.params.id },
+      order: [['created_at', 'DESC']],
+    });
+
+    return res.json(checkins);
   }
 }
 
